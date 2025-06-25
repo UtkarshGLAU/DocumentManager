@@ -47,3 +47,4 @@ coverage/
 # Ignore lock files if you use only one package manager
 # package-lock.json
 # yarn.lock
+/uploads
