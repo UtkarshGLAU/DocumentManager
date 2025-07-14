@@ -16,18 +16,6 @@ A modern, cloud-ready document management system with Google Drive integration, 
 
 ## 🚀 Quick Start
 
-### Option 1: Automated Setup
-```bash
-# On Windows
-setup.bat
-
-# On macOS/Linux
-chmod +x setup.sh
-./setup.sh
-```
-
-### Option 2: Manual Setup
-
 1. **Install Dependencies**:
    ```bash
    # Backend
@@ -67,19 +55,6 @@ chmod +x setup.sh
 - MongoDB database
 - Google Cloud project with Drive API
 - Firebase project with Google Auth
-
-## 🚀 Deployment
-
-📋 **For complete deployment instructions, see [EASY_DEPLOYMENT_GUIDE.md](EASY_DEPLOYMENT_GUIDE.md)**
-
-🧪 **For testing deployed features, see [FUNCTIONALITY_TEST_GUIDE.md](FUNCTIONALITY_TEST_GUIDE.md)**
-
-### Quick Deploy
-
-1. **Backend**: Deploy to Render
-2. **Frontend**: Deploy to Vercel  
-3. **Database**: MongoDB Atlas
-4. **Follow the step-by-step guide in EASY_DEPLOYMENT_GUIDE.md**
 
 ## 📊 Project Structure
 
@@ -133,73 +108,3 @@ VITE_FIREBASE_PROJECT_ID=your_project_id
 - **Admin**: Can upload, view, and delete all documents
 - **Regular User**: Can view public documents and their own private documents
 
-## 🔧 Development
-
-1. **Backend Development**:
-   ```bash
-   cd backend
-   npm run dev  # With nodemon
-   ```
-
-2. **Frontend Development**:
-   ```bash
-   cd frontend
-   npm run dev  # Vite dev server
-   ```
-
-3. **Build for Production**:
-   ```bash
-   # Frontend
-   npm run build
-   
-   # Backend (no build needed, uses Node.js directly)
-   ```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Google Drive Upload Fails**: Check OAuth token and Google Drive API access
-2. **CORS Errors**: Verify `FRONTEND_URL` in backend environment
-3. **Auth Issues**: Check Firebase configuration and authorized domains
-4. **MongoDB Connection**: Verify connection string and IP whitelist
-
-See [EASY_DEPLOYMENT_GUIDE.md](EASY_DEPLOYMENT_GUIDE.md) and [FUNCTIONALITY_TEST_GUIDE.md](FUNCTIONALITY_TEST_GUIDE.md) for detailed troubleshooting.
-
-## 📈 Database Design
-
-![ER Diagram SVG](Documents/UpdatedErUtkarsh.svg)
-
-[Database Design Documentation](Documents/DocumentOfDatabaseDesign.pdf)
-
-## 📈 Roadmap
-
-- [ ] Bulk file upload
-- [ ] Document preview
-- [ ] User groups and sharing
-- [ ] Full-text search
-- [ ] Email notifications
-- [ ] Activity logging
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- 📖 [Easy Deployment Guide](EASY_DEPLOYMENT_GUIDE.md)
-- 🧪 [Functionality Test Guide](FUNCTIONALITY_TEST_GUIDE.md)
-- 🐛 [Issue Tracker](https://github.com/your-username/documentManagement/issues)
-- 💬 [Discussions](https://github.com/your-username/documentManagement/discussions)
-
----
-
-Made with ❤️ for modern document management
