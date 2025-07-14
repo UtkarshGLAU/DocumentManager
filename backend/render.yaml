@@ -1,0 +1,5 @@
+# Render Build Script for Node.js Backend
+
+# This will be automatically executed by Render
+npm install
+npm start
