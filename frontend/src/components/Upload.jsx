@@ -1,5 +1,5 @@
 // src/components/Upload.jsx
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 
 export default function Upload({ user }) {
@@ -7,6 +7,27 @@ export default function Upload({ user }) {
   const [isPrivate, setIsPrivate] = useState(false);
   const [tags, setTags] = useState("");
   const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (selectedFile) => {
+    setFile(selectedFile);
+    if (selectedFile) {
+      console.log('✅ File selected:', selectedFile.name, selectedFile.size, 'bytes');
+      console.log('🔍 File type:', selectedFile.type);
+      console.log('🔍 File last modified:', selectedFile.lastModified);
+      console.log('🔍 Browser info:', navigator.userAgent);
+    }
+  };
+
+  const triggerFileSelect = () => {
+    console.log('🔍 Custom file select button clicked');
+    if (fileInputRef.current) {
+      console.log('✅ File input ref exists, triggering click');
+      fileInputRef.current.click();
+    } else {
+      console.error('❌ File input ref not found');
+    }
+  };
 
   const handleUpload = async () => {
     if (!file) return;
@@ -92,13 +113,83 @@ export default function Upload({ user }) {
           await handleUpload();
         }}
       >
-        <input
-          type="file"
-          onChange={(e) => setFile(e.target.files[0])}
-          value={file ? undefined : ""}
-          disabled={uploading}
-        />
-        <div className="checkbox-container">
+        <div style={{ marginBottom: '1rem' }}>
+          <label htmlFor="file-input" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            📁 Choose File:
+          </label>
+          
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            id="file-input"
+            type="file"
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.csv,.xlsx,.ppt,.pptx"
+            onChange={(e) => handleFileSelect(e.target.files[0])}
+            disabled={uploading}
+            style={{ display: 'none' }}
+          />
+          
+          {/* Custom file input button */}
+          <div
+            onClick={triggerFileSelect}
+            style={{
+              width: '100%',
+              padding: '12px',
+              border: '2px dashed #cbd5e0',
+              borderRadius: '8px',
+              backgroundColor: uploading ? '#f5f5f5' : 'white',
+              cursor: uploading ? 'not-allowed' : 'pointer',
+              textAlign: 'center',
+              transition: 'all 0.3s ease',
+              minHeight: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              color: file ? '#28a745' : '#6c757d'
+            }}
+            onMouseOver={(e) => {
+              if (!uploading) {
+                e.target.style.borderColor = '#4f46e5';
+                e.target.style.backgroundColor = '#f7fafc';
+              }
+            }}
+            onMouseOut={(e) => {
+              if (!uploading) {
+                e.target.style.borderColor = '#cbd5e0';
+                e.target.style.backgroundColor = 'white';
+              }
+            }}
+          >
+            {file ? `✅ ${file.name}` : '📁 Click to select a file'}
+          </div>
+          
+          {/* Fallback: Standard file input for browsers that need it */}
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.csv,.xlsx,.ppt,.pptx"
+            onChange={(e) => handleFileSelect(e.target.files[0])}
+            disabled={uploading}
+            style={{
+              width: '100%',
+              padding: '8px',
+              border: '2px solid #ddd',
+              borderRadius: '4px',
+              fontSize: '14px',
+              backgroundColor: uploading ? '#f5f5f5' : 'white',
+              cursor: uploading ? 'not-allowed' : 'pointer',
+              marginTop: '8px'
+            }}
+          />
+          
+          {file && (
+            <p style={{ marginTop: '0.5rem', color: '#28a745', fontSize: '14px' }}>
+              ✅ Selected: {file.name} ({Math.round(file.size / 1024)} KB)
+            </p>
+          )}
+        </div>
+        
+        <div className="checkbox-container" style={{ marginBottom: '1rem' }}>
           <input
             type="checkbox"
             id="private"
@@ -106,17 +197,42 @@ export default function Upload({ user }) {
             onChange={() => setIsPrivate(!isPrivate)}
             disabled={uploading}
           />
-          <label htmlFor="private">🔒 Private Document</label>
+          <label htmlFor="private" style={{ marginLeft: '0.5rem' }}>🔒 Private Document</label>
         </div>
+        
         <input
           type="text"
           placeholder="🏷️ Tags (e.g. urgent, review)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          style={{ marginTop: "0.5rem", padding: "5px", width: "100%" }}
+          style={{ 
+            marginTop: "0.5rem", 
+            marginBottom: "1rem",
+            padding: "8px", 
+            width: "100%",
+            border: "2px solid #ddd",
+            borderRadius: "4px",
+            fontSize: "14px"
+          }}
           disabled={uploading}
         />
-        <button type="submit" disabled={!file || uploading}>
+        
+        <button 
+          type="submit" 
+          disabled={!file || uploading}
+          style={{
+            width: '100%',
+            padding: '12px',
+            backgroundColor: (!file || uploading) ? '#ccc' : '#4285f4',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            cursor: (!file || uploading) ? 'not-allowed' : 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+        >
           {uploading ? "⏳ Uploading..." : "📤 Upload to Google Drive"}
         </button>
       </form>
