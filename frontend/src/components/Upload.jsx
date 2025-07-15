@@ -35,7 +35,7 @@ export default function Upload({ user }) {
       formData.append("email", user.email);
       formData.append("isPrivate", isPrivate);
       formData.append("name", user.name || user.displayName);
-      formData.append("isAdmin", user.isAdmin);
+      formData.append("role", user.role);
       formData.append("tags", tags);      
       // Send the Google OAuth access token (not Firebase ID token)
       if (googleAccessToken) {

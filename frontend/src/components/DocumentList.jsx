@@ -16,7 +16,7 @@ export default function DocumentList({ user }) {
       .get(`${API_BASE_URL}/api/docs/all`, {
         params: {
           uid: user.uid,
-          isAdmin: user.isAdmin,
+          role: user.role,
         },
       })
       .then((res) => setDocs(res.data))
@@ -44,7 +44,10 @@ export default function DocumentList({ user }) {
     const googleAccessToken = localStorage.getItem('googleDriveAccessToken');
     
     const requestData = {
-      params: { isAdmin: user.isAdmin }
+      params: { 
+        uid: user.uid,
+        role: user.role 
+      }
     };
     
     // Add access token to request if available
@@ -225,7 +228,8 @@ export default function DocumentList({ user }) {
                           🏷️ {doc.tags.join(", ")}
                         </span>
                       )}
-                      {user.isAdmin && (
+                      {/* Show delete button for admins (all files) or users (own files only) */}
+                      {(user.role === 'admin' || (user.role === 'user' && doc.uploader.uid === user.uid)) && (
                         <button
                           className="delete-btn"
                           style={{ marginLeft: "1rem", color: "red" }}

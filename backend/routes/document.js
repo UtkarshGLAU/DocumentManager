@@ -28,8 +28,12 @@ const upload = multer({
 
 // POST /api/docs/upload
 router.post("/upload", upload.single("file"), async (req, res) => {
-  const { uid, email, name, isAdmin, accessToken } = req.body;
-  if (isAdmin !== "true") return res.status(403).json({ error: "Forbidden" });
+  const { uid, email, name, role, accessToken } = req.body;
+  
+  // Only users (not guests) can upload files
+  if (role !== "user" && role !== "admin") {
+    return res.status(403).json({ error: "Only users with drive permission can upload files" });
+  }
 
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -38,6 +42,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
   try {
     const latest = await Document.findOne({
       originalName: req.file.originalname,
+      "uploader.uid": uid, // Only check versions for same user
     }).sort({ version: -1 });
 
     const newVersion = latest ? latest.version + 1 : 1;
@@ -57,6 +62,7 @@ router.post("/upload", upload.single("file"), async (req, res) => {
     try {
       console.log('🔍 Debug: Upload request analysis...');
       console.log('🔍 Access token received:', accessToken ? 'YES' : 'NO');
+      console.log('🔍 User role:', role);
       console.log('🔍 Token length:', accessToken ? accessToken.length : 0);
       console.log('🔍 Token type:', accessToken ? (accessToken.startsWith('eyJ') ? 'Firebase ID Token' : 'OAuth Access Token') : 'None');
       
@@ -105,16 +111,28 @@ router.post("/upload", upload.single("file"), async (req, res) => {
 });
 // GET /api/docs/all
 router.get("/all", async (req, res) => {
-  const { uid, isAdmin } = req.query;
+  const { uid, role } = req.query;
 
   try {
-    const docs = await Document.find({
-      $or: [
-        { isPrivate: false },
-        { "uploader.uid": uid },
-        ...(isAdmin === "true" ? [{}] : []),
-      ],
-    }).sort({ uploadDate: -1 });
+    let query = {};
+    
+    if (role === 'admin') {
+      // Admins can see all documents
+      query = {};
+    } else if (role === 'user') {
+      // Users can see public documents and their own private documents
+      query = {
+        $or: [
+          { isPrivate: false },
+          { "uploader.uid": uid }
+        ]
+      };
+    } else {
+      // Guests can only see public documents
+      query = { isPrivate: false };
+    }
+
+    const docs = await Document.find(query).sort({ uploadDate: -1 });
 
     res.json(docs);
   } catch (err) {
@@ -124,19 +142,33 @@ router.get("/all", async (req, res) => {
 });
 // DELETE /api/docs/:id
 router.delete("/:id", async (req, res) => {
-  const { isAdmin } = req.query;
+  const { uid, role } = req.query;
   const { accessToken } = req.body;
-
-  if (isAdmin !== "true") return res.status(403).json({ error: "Forbidden" });
 
   try {
     const doc = await Document.findById(req.params.id);
     if (!doc) return res.status(404).json({ error: "Document not found" });
 
+    // Check permissions: users can only delete their own files, admins can delete any
+    if (role === 'user' && doc.uploader.uid !== uid) {
+      return res.status(403).json({ error: "You can only delete your own files" });
+    }
+    
+    if (role === 'guest') {
+      return res.status(403).json({ error: "Guests cannot delete files" });
+    }
+
+    if (role !== 'admin' && role !== 'user') {
+      return res.status(403).json({ error: "Insufficient permissions" });
+    }
+
     console.log('🔍 Delete request analysis...');
     console.log('🔍 Document storage type:', doc.storageType);
     console.log('🔍 Google Drive file ID:', doc.googleDriveFileId || 'None');
     console.log('🔍 Access token received:', accessToken ? 'YES' : 'NO');
+    console.log('🔍 User role:', role);
+    console.log('🔍 Document owner:', doc.uploader.uid);
+    console.log('🔍 Requesting user:', uid);
 
     // Delete from Google Drive (all files are now stored in Google Drive)
     if (doc.googleDriveFileId) {

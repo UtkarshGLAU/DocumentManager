@@ -95,16 +95,24 @@ VITE_FIREBASE_PROJECT_ID=your_project_id
 
 ## 🧪 API Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/login` | User authentication | No |
-| GET | `/api/docs/all` | Get user documents | Yes |
-| POST | `/api/docs/upload` | Upload document | Admin |
-| DELETE | `/api/docs/:id` | Delete document | Admin |
-| GET | `/health` | Health check | No |
+| Method | Endpoint | Description | Auth Required | Role Required |
+|--------|----------|-------------|---------------|---------------|
+| POST | `/api/auth/login` | User authentication | No | - |
+| POST | `/api/auth/grant-drive-permission` | Grant Google Drive permission | Yes | - |
+| GET | `/api/docs/all` | Get documents (filtered by role) | Yes | Guest+ |
+| POST | `/api/docs/upload` | Upload document | Yes | User+ |
+| DELETE | `/api/docs/:id` | Delete document | Yes | User (own files) / Admin (all files) |
+| GET | `/health` | Health check | No | - |
 
 ## 👥 User Roles
 
-- **Admin**: Can upload, view, and delete all documents
-- **Regular User**: Can view public documents and their own private documents
+- **Guest**: Can view and download public documents only (no Google Drive permission required)
+- **User**: Can upload, view, and delete their own documents (requires Google Drive permission)
+- **Admin**: Can upload, view, and delete all documents (requires Google Drive permission)
+
+### Role Assignment
+- When users first log in, they are assigned as **Guest** by default
+- If Google Drive permissions are granted during login, they become **User**
+- Guests can upgrade to **User** by granting Google Drive permissions after login
+- Admin status is managed separately and persists regardless of Drive permissions
 
