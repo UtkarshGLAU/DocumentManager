@@ -463,26 +463,22 @@ body {
   border-color: #4285f4;
 }
 
-.access-card h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 10px;
-  color: #2d3748;
-  transition: color 0.3s ease;
+.access-card--selected {
+  border-color: #4f46e5 !important;
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%) !important;
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(79, 70, 229, 0.15);
 }
 
-.access-card:hover h4 {
+.access-card--selected::before {
+  transform: scaleX(1);
+}
+
+.access-card--selected h4 {
   color: #4f46e5;
 }
 
-.access-card p {
-  font-size: 14px;
-  color: #4a5568;
-  line-height: 1.5;
-  transition: color 0.3s ease;
-}
-
-.access-card:hover p {
+.access-card--selected p {
   color: #2d3748;
 }
 

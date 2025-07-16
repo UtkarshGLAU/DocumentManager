@@ -5,37 +5,48 @@ import axios from "axios";
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedAccessLevel, setSelectedAccessLevel] = useState(null);
 
-  const handleLogin = async () => {
+  const handleLogin = async (accessLevel) => {
     setIsLoading(true);
     try {
       const result = await signInWithPopup(auth, provider);
 
-      // 🔐 Extract Google OAuth access token for Drive API
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const accessToken = credential.accessToken;
+      let accessToken = null;
+      let hasDriveAccess = false;
 
-      console.log("🔍 Debug: Login result analysis...");
-      console.log("🔍 Credential object:", credential ? 'EXISTS' : 'NULL');
-      console.log("🔍 Access token:", accessToken ? 'EXISTS' : 'NULL');
-      console.log("🔍 Token length:", accessToken ? accessToken.length : 0);
+      // Only request Google Drive permissions for full user access
+      if (accessLevel === 'user') {
+        // 🔐 Extract Google OAuth access token for Drive API
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        accessToken = credential.accessToken;
 
-      // Check if we have an existing token from previous login
-      const existingToken = localStorage.getItem('googleDriveAccessToken');
-      console.log("🔍 Existing token:", existingToken ? 'EXISTS' : 'NULL');
+        console.log("🔍 Debug: Login result analysis...");
+        console.log("🔍 Credential object:", credential ? 'EXISTS' : 'NULL');
+        console.log("🔍 Access token:", accessToken ? 'EXISTS' : 'NULL');
+        console.log("🔍 Token length:", accessToken ? accessToken.length : 0);
 
-      // Use new token if available, otherwise use existing token
-      const tokenToUse = accessToken || existingToken;
-      const hasDriveAccess = !!tokenToUse;
+        // Check if we have an existing token from previous login
+        const existingToken = localStorage.getItem('googleDriveAccessToken');
+        console.log("🔍 Existing token:", existingToken ? 'EXISTS' : 'NULL');
 
-      // Store the token if we got a new one
-      if (accessToken) {
-        localStorage.setItem('googleDriveAccessToken', accessToken);
-        console.log('✅ New Google Drive access token stored successfully');
-      } else if (existingToken) {
-        console.log('✅ Using existing Google Drive access token');
+        // Use new token if available, otherwise use existing token
+        const tokenToUse = accessToken || existingToken;
+        hasDriveAccess = !!tokenToUse;
+
+        // Store the token if we got a new one
+        if (accessToken) {
+          localStorage.setItem('googleDriveAccessToken', accessToken);
+          console.log('✅ New Google Drive access token stored successfully');
+        } else if (existingToken) {
+          console.log('✅ Using existing Google Drive access token');
+        } else {
+          console.warn('⚠️ No Google access token available - user will be guest');
+        }
       } else {
-        console.warn('⚠️ No Google access token available - user will be guest');
+        // For guest access, explicitly set no drive access
+        console.log('🔍 Guest access selected - no Google Drive permissions requested');
+        hasDriveAccess = false;
       }
 
       // Send login data to backend including drive access status
@@ -46,7 +57,8 @@ export default function Login() {
         email: result.user.email,
         name: result.user.displayName,
         photo: result.user.photoURL,
-        hasGoogleDriveAccess: hasDriveAccess
+        hasGoogleDriveAccess: hasDriveAccess,
+        accessLevel: accessLevel
       });
 
     } catch (err) {
@@ -62,7 +74,11 @@ export default function Login() {
       <div className="access-level-selector">
         <h3 className="text-center mb-md">Choose your access level:</h3>
         <div className="flex gap-md">
-          <div className="access-card access-card--guest">
+          <div 
+            className={`access-card access-card--guest ${selectedAccessLevel === 'guest' ? 'access-card--selected' : ''}`}
+            onClick={() => setSelectedAccessLevel('guest')}
+            style={{ cursor: 'pointer' }}
+          >
             <h4>🔍 Guest Access</h4>
             <p>
               • View and download public documents<br/>
@@ -70,7 +86,11 @@ export default function Login() {
               • No Google Drive access required
             </p>
           </div>
-          <div className="access-card access-card--user">
+          <div 
+            className={`access-card access-card--quest ${selectedAccessLevel === 'user' ? 'access-card--selected' : ''}`}
+            onClick={() => setSelectedAccessLevel('user')}
+            style={{ cursor: 'pointer' }}
+          >
             <h4>📤 Full User Access</h4>
             <p>
               • Upload and manage your documents<br/>
@@ -83,15 +103,26 @@ export default function Login() {
       
       <button 
         className="login-btn heartbeat" 
-        onClick={handleLogin}
-        disabled={isLoading}
+        onClick={() => handleLogin(selectedAccessLevel)}
+        disabled={isLoading || !selectedAccessLevel}
       >
         {isLoading ? '⏳ Logging in...' : '🚀 Login with Google'}
       </button>
       
       <p className="login-instructions">
-        During login, you can choose to grant or deny Google Drive access.<br/>
-        <strong>Grant access</strong> for full user features, or <strong>deny</strong> for guest access.
+        {selectedAccessLevel === 'guest' ? (
+          <>
+            <strong>Guest Access:</strong> You'll be able to view and download public documents without Google Drive permissions.
+          </>
+        ) : selectedAccessLevel === 'user' ? (
+          <>
+            During login, you'll be asked to grant Google Drive access for full user features.
+          </>
+        ) : (
+          <>
+            Please select an access level above to continue.
+          </>
+        )}
       </p>
     </div>
   );
