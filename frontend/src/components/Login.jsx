@@ -56,36 +56,25 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <h2 className="login-title">Document Management System</h2>
-      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <h3>Choose your access level:</h3>
-        <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginTop: '20px' }}>
-          <div style={{ 
-            border: '2px solid #ddd', 
-            padding: '20px', 
-            borderRadius: '10px', 
-            maxWidth: '200px',
-            backgroundColor: '#f9f9f9'
-          }}>
+    <div className="login-container fade-in">
+      <h2 className="login-title">📄 Document Management System</h2>
+      
+      <div className="access-level-selector">
+        <h3 className="text-center mb-md">Choose your access level:</h3>
+        <div className="flex gap-md">
+          <div className="access-card access-card--guest">
             <h4>🔍 Guest Access</h4>
-            <p style={{ fontSize: '14px', color: '#666' }}>
-              • View and download public documents
-              • No upload permissions
+            <p>
+              • View and download public documents<br/>
+              • No upload permissions<br/>
               • No Google Drive access required
             </p>
           </div>
-          <div style={{ 
-            border: '2px solid #4285f4', 
-            padding: '20px', 
-            borderRadius: '10px', 
-            maxWidth: '200px',
-            backgroundColor: '#f0f8ff'
-          }}>
+          <div className="access-card access-card--user">
             <h4>📤 Full User Access</h4>
-            <p style={{ fontSize: '14px', color: '#666' }}>
-              • Upload and manage your documents
-              • Access all features
+            <p>
+              • Upload and manage your documents<br/>
+              • Access all features<br/>
               • Requires Google Drive permissions
             </p>
           </div>
@@ -97,10 +86,10 @@ export default function Login() {
         onClick={handleLogin}
         disabled={isLoading}
       >
-        {isLoading ? 'Logging in...' : 'Login with Google'}
+        {isLoading ? '⏳ Logging in...' : '🚀 Login with Google'}
       </button>
       
-      <p style={{ fontSize: '12px', marginTop: '10px', color: '#666', textAlign: 'center' }}>
+      <p className="login-instructions">
         During login, you can choose to grant or deny Google Drive access.<br/>
         <strong>Grant access</strong> for full user features, or <strong>deny</strong> for guest access.
       </p>

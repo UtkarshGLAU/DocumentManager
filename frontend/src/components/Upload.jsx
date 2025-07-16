@@ -104,7 +104,7 @@ export default function Upload({ user }) {
   };
 
   return (
-    <div className="upload-section">
+    <div className="upload-section fade-in">
       <h3>📤 Upload to Google Drive</h3>
       <form
         className="upload-form"
@@ -113,8 +113,8 @@ export default function Upload({ user }) {
           await handleUpload();
         }}
       >
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="file-input" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+        <div className="file-input-container">
+          <label htmlFor="file-input" className="file-input-label">
             📁 Choose File:
           </label>
           
@@ -126,40 +126,15 @@ export default function Upload({ user }) {
             accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.csv,.xlsx,.ppt,.pptx"
             onChange={(e) => handleFileSelect(e.target.files[0])}
             disabled={uploading}
-            style={{ display: 'none' }}
+            className="hidden"
           />
           
           {/* Custom file input button */}
           <div
             onClick={triggerFileSelect}
-            style={{
-              width: '100%',
-              padding: '12px',
-              border: '2px dashed #cbd5e0',
-              borderRadius: '8px',
-              backgroundColor: uploading ? '#f5f5f5' : 'white',
-              cursor: uploading ? 'not-allowed' : 'pointer',
-              textAlign: 'center',
-              transition: 'all 0.3s ease',
-              minHeight: '44px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '14px',
-              color: file ? '#28a745' : '#6c757d'
-            }}
-            onMouseOver={(e) => {
-              if (!uploading) {
-                e.target.style.borderColor = '#4f46e5';
-                e.target.style.backgroundColor = '#f7fafc';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!uploading) {
-                e.target.style.borderColor = '#cbd5e0';
-                e.target.style.backgroundColor = 'white';
-              }
-            }}
+            className={`file-input-custom ${
+              file ? 'file-input-custom--selected' : ''
+            } ${uploading ? 'file-input-custom--disabled' : ''}`}
           >
             {file ? `✅ ${file.name}` : '📁 Click to select a file'}
           </div>
@@ -170,26 +145,17 @@ export default function Upload({ user }) {
             accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.csv,.xlsx,.ppt,.pptx"
             onChange={(e) => handleFileSelect(e.target.files[0])}
             disabled={uploading}
-            style={{
-              width: '100%',
-              padding: '8px',
-              border: '2px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: uploading ? '#f5f5f5' : 'white',
-              cursor: uploading ? 'not-allowed' : 'pointer',
-              marginTop: '8px'
-            }}
+            className="file-input-fallback"
           />
           
           {file && (
-            <p style={{ marginTop: '0.5rem', color: '#28a745', fontSize: '14px' }}>
+            <p className="file-selected-info">
               ✅ Selected: {file.name} ({Math.round(file.size / 1024)} KB)
             </p>
           )}
         </div>
         
-        <div className="checkbox-container" style={{ marginBottom: '1rem' }}>
+        <div className="checkbox-container">
           <input
             type="checkbox"
             id="private"
@@ -197,7 +163,7 @@ export default function Upload({ user }) {
             onChange={() => setIsPrivate(!isPrivate)}
             disabled={uploading}
           />
-          <label htmlFor="private" style={{ marginLeft: '0.5rem' }}>🔒 Private Document</label>
+          <label htmlFor="private">🔒 Private Document</label>
         </div>
         
         <input
@@ -205,33 +171,16 @@ export default function Upload({ user }) {
           placeholder="🏷️ Tags (e.g. urgent, review)"
           value={tags}
           onChange={(e) => setTags(e.target.value)}
-          style={{ 
-            marginTop: "0.5rem", 
-            marginBottom: "1rem",
-            padding: "8px", 
-            width: "100%",
-            border: "2px solid #ddd",
-            borderRadius: "4px",
-            fontSize: "14px"
-          }}
+          className="form-input"
           disabled={uploading}
         />
         
         <button 
           type="submit" 
           disabled={!file || uploading}
-          style={{
-            width: '100%',
-            padding: '12px',
-            backgroundColor: (!file || uploading) ? '#ccc' : '#4285f4',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: (!file || uploading) ? 'not-allowed' : 'pointer',
-            transition: 'background-color 0.2s'
-          }}
+          className={`form-button ${
+            !file || uploading ? 'opacity-50 cursor-not-allowed' : 'form-button--primary'
+          }`}
         >
           {uploading ? "⏳ Uploading..." : "📤 Upload to Google Drive"}
         </button>

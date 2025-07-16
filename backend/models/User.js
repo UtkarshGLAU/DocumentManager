@@ -6,7 +6,6 @@ const userSchema = new mongoose.Schema({
   email: String,
   name: String,
   photo: String,
-  isAdmin: { type: Boolean, default: false },
   role: { 
     type: String, 
     enum: ['guest', 'user', 'admin'], 

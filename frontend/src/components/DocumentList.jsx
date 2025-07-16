@@ -123,128 +123,116 @@ export default function DocumentList({ user }) {
   };
 
   return (
-    <div className="document-section">
-      <div
-        className="document-section-header"
-        style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-      >
+    <div className="document-section fade-in">
+      <div className="document-section-header">
         <h3>📁 Document Versions</h3>
         <button className="refresh-btn" onClick={fetchDocs}>
           🔄 Refresh
         </button>
       </div>
-      <div
-        className="search-boxes"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "0.5rem",
-          marginBottom: "1rem",
-        }}
-      >
+      
+      <div className="search-boxes">
         <input
           type="text"
           placeholder="🔍 Search by document name..."
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
+          className="form-input"
         />
         <input
           type="text"
           placeholder="👤 Search by uploader name..."
           value={searchUploader}
           onChange={(e) => setSearchUploader(e.target.value)}
+          className="form-input"
         />
         <input
           type="text"
           placeholder="🏷️ Search by tags..."
           value={searchTags}
           onChange={(e) => setSearchTags(e.target.value)}
+          className="form-input"
         />
       </div>
 
-      {Object.keys(groupedDocs).map((name) => {
-        const grouped = groupedDocs[name];
-        return (
-          <div
-            key={name}
-            className="document-card"
-            style={{
-              marginBottom: "1rem",
-              padding: "10px",
-              border: "1px solid gray",
-            }}
-          >
-            <h4>
-              {getFileEmoji(name)}
-              {name}
-            </h4>
-            <ul>
-              {grouped
-                .sort((a, b) => b.version - a.version)
-                .map((doc) => {
-                  const downloadLink = getDownloadLink(doc);
-                  const viewLink = getViewLink(doc);
-                  
-                  return (
-                    <li key={doc._id}>
-                      <span>
-                        Version {doc.version} — Uploaded by {doc.uploader.name}
-                        {doc.storageType === 'gdrive' && ' 📥 (Google Drive)'}
-                      </span>
-                      
-                      {/* Download link */}
-                      {downloadLink && (
-                        <a
-                          href={downloadLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ marginLeft: "0.5rem" }}
-                        >
-                          📥 Download
-                        </a>
-                      )}
-                      
-                      {/* View link for Google Drive files */}
-                      {viewLink && (
-                        <a
-                          href={viewLink}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ marginLeft: "0.5rem" }}
-                        >
-                          👁️ View
-                        </a>
-                      )}
-                      
-                      {doc.tags?.length > 0 && (
-                        <span
-                          className="tag"
-                          style={{
-                            marginLeft: "0.5rem",
-                            fontStyle: "italic",
-                            color: "#555",
-                          }}
-                        >
-                          🏷️ {doc.tags.join(", ")}
-                        </span>
-                      )}
-                      {/* Show delete button for admins (all files) or users (own files only) */}
-                      {(user.role === 'admin' || (user.role === 'user' && doc.uploader.uid === user.uid)) && (
-                        <button
-                          className="delete-btn"
-                          style={{ marginLeft: "1rem", color: "red" }}
-                          onClick={() => handleDelete(doc._id)}
-                        >
-                          🗑️ Delete
-                        </button>
-                      )}
-                    </li>
-                  );
-                })}
-            </ul>
-          </div>
-        );
-      })}
+      {Object.keys(groupedDocs).length === 0 ? (
+        <div className="text-center p-lg">
+          <p className="text-muted">No documents found matching your search criteria.</p>
+        </div>
+      ) : (
+        Object.keys(groupedDocs).map((name) => {
+          const grouped = groupedDocs[name];
+          return (
+            <div key={name} className="document-card">
+              <h4>
+                {getFileEmoji(name)}
+                {name}
+              </h4>
+              <ul>
+                {grouped
+                  .sort((a, b) => b.version - a.version)
+                  .map((doc) => {
+                    const downloadLink = getDownloadLink(doc);
+                    const viewLink = getViewLink(doc);
+                    
+                    return (
+                      <li key={doc._id} className="document-item">
+                        <div className="document-version-info">
+                          <span>
+                            Version {doc.version} — Uploaded by {doc.uploader.name}
+                            {doc.storageType === 'gdrive' && ' 📥 (Google Drive)'}
+                          </span>
+                        </div>
+                        
+                        <div className="document-actions">
+                          {/* Download link */}
+                          {downloadLink && (
+                            <a
+                              href={downloadLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="document-link document-link--download"
+                            >
+                              📥 Download
+                            </a>
+                          )}
+                          
+                          {/* View link for Google Drive files */}
+                          {viewLink && (
+                            <a
+                              href={viewLink}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="document-link document-link--view"
+                            >
+                              👁️ View
+                            </a>
+                          )}
+                          
+                          {doc.tags?.length > 0 && (
+                            <span className="tag">
+                              🏷️ {doc.tags.join(", ")}
+                            </span>
+                          )}
+                          
+                          {/* Show delete button for admins (all files) or users (own files only) */}
+                          {(user.role === 'admin' || (user.role === 'user' && doc.uploader.uid === user.uid)) && (
+                            <button
+                              className="delete-btn"
+                              onClick={() => handleDelete(doc._id)}
+                            >
+                              🗑️ Delete
+                            </button>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 }

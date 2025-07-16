@@ -100,13 +100,13 @@ function App() {
   const getUserRoleDisplay = (role) => {
     switch (role) {
       case 'admin':
-        return { text: '👑 Admin', color: '#ff6b6b' };
+        return { text: '👑 Admin', color: 'role-badge--admin' };
       case 'user':
-        return { text: '📤 User', color: '#4ecdc4' };
+        return { text: '📤 User', color: 'role-badge--user' };
       case 'guest':
-        return { text: '🔍 Guest', color: '#95a5a6' };
+        return { text: '🔍 Guest', color: 'role-badge--guest' };
       default:
-        return { text: '🔍 Guest', color: '#95a5a6' };
+        return { text: '🔍 Guest', color: 'role-badge--guest' };
     }
   };
 
@@ -173,47 +173,39 @@ function App() {
   if (loading) {
     return (
       <div className="loading-container">
-        <p>Loading...</p>
+        <div className="flex-center flex-column">
+          <div className="spinner"></div>
+          <p className="mt-md">Loading your workspace...</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
+    <div className="fade-in">
       {user ? (
         <div>
           <div className="header">
             <h1>📄 Document Manager</h1>
             <div className="user-info">
               <span>Welcome, {user.name || user.email}</span>
-              <button onClick={handleLogout} className="logout" style={{ marginLeft: "1rem", color: "red" }}>
+              <button onClick={handleLogout} className="logout">
                 Logout
               </button>
             </div>
           </div>
+          
           <div className="main-content">
             <div className="welcome-section">
               <h2>Welcome {user.name || user.email}</h2>
-              <div style={{ marginBottom: '20px' }}>
-                <span style={{ 
-                  backgroundColor: getUserRoleDisplay(user.role).color, 
-                  color: 'white', 
-                  padding: '5px 10px', 
-                  borderRadius: '15px',
-                  fontSize: '14px'
-                }}>
+              <div className="mb-md">
+                <span className={`role-badge ${getUserRoleDisplay(user.role).color}`}>
                   {getUserRoleDisplay(user.role).text}
                 </span>
               </div>
 
               {user.role === 'guest' && (
-                <div style={{ 
-                  backgroundColor: '#fff3cd', 
-                  border: '1px solid #ffeaa7', 
-                  padding: '15px', 
-                  borderRadius: '5px',
-                  marginBottom: '20px'
-                }}>
+                <div className="role-notification role-notification--guest">
                   <h4>🔍 Guest Access</h4>
                   <p>You currently have guest access. You can view and download public documents.</p>
                   {!user.hasDrivePermission && (
@@ -221,14 +213,7 @@ function App() {
                       <p>To upload your own files, please grant Google Drive permission:</p>
                       <button 
                         onClick={handleGrantDrivePermission}
-                        style={{
-                          backgroundColor: '#4285f4',
-                          color: 'white',
-                          border: 'none',
-                          padding: '10px 20px',
-                          borderRadius: '5px',
-                          cursor: 'pointer'
-                        }}
+                        className="form-button form-button--primary mt-sm"
                       >
                         Grant Google Drive Permission
                       </button>
@@ -236,67 +221,40 @@ function App() {
                   )}
                   {user.hasDrivePermission && (
                     <div>
-                      <p style={{ color: '#28a745', fontWeight: 'bold' }}>
+                      <p className="text-success font-bold">
                         ✅ You have previously granted Google Drive permission! 
                       </p>
-                      <p style={{ fontSize: '14px', color: '#666' }}>
+                      <p className="text-sm text-muted">
                         Your access should be upgraded automatically. If you still see Guest access, try refreshing:
                       </p>
-                      <button 
-                        onClick={() => window.location.reload()}
-                        style={{
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '14px',
-                          marginRight: '10px'
-                        }}
-                      >
-                        🔄 Refresh Page
-                      </button>
-                      <button 
-                        onClick={handleGrantDrivePermission}
-                        style={{
-                          backgroundColor: '#17a2b8',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          fontSize: '14px'
-                        }}
-                      >
-                        🔄 Refresh Permissions
-                      </button>
+                      <div className="flex gap-sm mt-sm">
+                        <button 
+                          onClick={() => window.location.reload()}
+                          className="form-button form-button--secondary"
+                        >
+                          🔄 Refresh Page
+                        </button>
+                        <button 
+                          onClick={handleGrantDrivePermission}
+                          className="form-button form-button--info"
+                        >
+                          🔄 Refresh Permissions
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
               )}
 
               {user.role === 'user' && (
-                <div style={{ 
-                  backgroundColor: '#d4edda', 
-                  border: '1px solid #c3e6cb', 
-                  padding: '15px', 
-                  borderRadius: '5px',
-                  marginBottom: '20px'
-                }}>
+                <div className="role-notification role-notification--user">
                   <h4>📤 Full User Access</h4>
                   <p>You have full access! You can upload, manage, and delete your own documents.</p>
                 </div>
               )}
 
               {user.role === 'admin' && (
-                <div style={{ 
-                  backgroundColor: '#f8d7da', 
-                  border: '1px solid #f5c6cb', 
-                  padding: '15px', 
-                  borderRadius: '5px',
-                  marginBottom: '20px'
-                }}>
+                <div className="role-notification role-notification--admin">
                   <h4>👑 Admin Access</h4>
                   <p>You have administrator privileges. You can manage all documents in the system.</p>
                 </div>
