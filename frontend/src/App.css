@@ -937,6 +937,8 @@ body {
   background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
   border-radius: 8px;
   border: 1px solid #e2e8f0;
+  position: relative;
+  z-index: 1;
 }
 
 .search-boxes input[type="text"] {
@@ -947,6 +949,10 @@ body {
   font-size: 14px;
   transition: all 0.3s ease;
   background: white;
+  cursor: text;
+  pointer-events: auto;
+  position: relative;
+  z-index: 2;
 }
 
 .search-boxes input[type="text"]:focus {

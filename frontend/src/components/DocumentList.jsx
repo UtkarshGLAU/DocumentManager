@@ -137,21 +137,21 @@ export default function DocumentList({ user }) {
           placeholder="🔍 Search by document name..."
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
-          className="form-input"
+          style={{ cursor: 'text', pointerEvents: 'auto' }}
         />
         <input
           type="text"
           placeholder="👤 Search by uploader name..."
           value={searchUploader}
           onChange={(e) => setSearchUploader(e.target.value)}
-          className="form-input"
+          style={{ cursor: 'text', pointerEvents: 'auto' }}
         />
         <input
           type="text"
           placeholder="🏷️ Search by tags..."
           value={searchTags}
           onChange={(e) => setSearchTags(e.target.value)}
-          className="form-input"
+          style={{ cursor: 'text', pointerEvents: 'auto' }}
         />
       </div>
 
